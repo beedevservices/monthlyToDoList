@@ -3,6 +3,7 @@
 ## Database Design Ideas:
 
 ### Model:
+
 #### Task
 ```python
 from app.config.mysqlconnection import connectToMySQL
@@ -23,6 +24,7 @@ class Task:
         self.updated_at = data['updated_at']
 
 ```
+
 #### History
 ```python
 class TaskHistory:
@@ -38,8 +40,8 @@ class TaskHistory:
 ```python
 
 ```
-## Model Methods
 
+## Model Methods
 ```python
     @classmethod
     def create(cls, data):
@@ -228,7 +230,9 @@ def mark_as_complete(cls, task_id):
     return connectToMySQL(cls.db).query_db(query, data)
 
 ```
+
 ## Views 
+
 ### Pulling Monthly:
 ```python
 from datetime import date, timedelta
@@ -249,6 +253,7 @@ monthly_tasks = Task.query.filter(
     Task.last_completed_date <= last_day_current_month,
 ).all()
 ```
+
 ### Complete one time
 ```python
 # Mark a one-time task as complete
@@ -256,6 +261,7 @@ task = Task.query.get(task_id)
 task.completed = True
 db.session.commit()
 ```
+
 ### API
 ```python
 @app.route('/get_tasks')
@@ -291,6 +297,7 @@ def get_tasks():
     
     return jsonify(events)
 ```
+
 ### Displaying Task Details and Description:
 ```python
 @app.route('/task/<int:task_id>')
@@ -298,6 +305,7 @@ def view_task(task_id):
     task = Task.get_one({'id': task_id})
     return render_template('task_details.html', task=task)
 ```
+
 ### Example route to fetch task history:
 ```python
 @app.route('/task_history/<int:task_id>')
@@ -307,8 +315,8 @@ def view_task_history(task_id):
     return render_template('task_history.html', task=task, task_history=task_history)
 ```
 
-
 ## Frontend
+
 ### HTML
 ```html
 <style>
@@ -348,6 +356,7 @@ def view_task_history(task_id):
 <!-- Include FullCalendar JavaScript -->
 <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js'></script>
 ```
+
 ### JS
 ```javascript
 document.addEventListener('DOMContentLoaded', function () {
@@ -376,7 +385,6 @@ var calendar = new FullCalendar.Calendar(calendarEl, {
 ```
 
 ### Displaying Tasks in a Calendar View:
-
 ```html
 <div id='calendar'></div>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.0/main.min.js'></script>
@@ -394,36 +402,28 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 ```
 
-
-
-
 # Display Via Tasks or History:
-
 
 ## Displaying Completed Tasks from the Primary Tasks Table:
 
 ### Pros:
-
 - Simplicity: It simplifies the code and database queries because you're dealing with a single table.
 - Real-Time Updates: Completed tasks are instantly reflected in the calendar view without needing to check the history table.
 - prioritize simplicity and real-time updates, especially for smaller-scale applications where historical analysis is not a primary concern
 
 ### Cons:
-
 - Data Integrity: The primary tasks table contains both completed and uncompleted tasks, which might not be ideal for maintaining historical data.
 - Limited History: You won't have a comprehensive history of completed tasks if you ever need to perform historical analysis.
 
 ## Fetching Completed Tasks from the Task History Table:
 
 ### Pros:
-
 -  Separation: It keeps completed tasks in a separate historical table, ensuring data integrity in the primary tasks table.
 Comprehensive History: You have a complete record of task completions for historical analysis and reporting.
 - Scalability: If your application grows and accumulates a large number of tasks and task completions, having a separate history table can improve performance.
 - historical tracking and data integrity, ensures that completed tasks are stored separately, preserving the historical record.
 
 ### Cons:
-
 - Complexity: It requires more complex database queries and data merging to display tasks from multiple tables.
 - Potentially Slower Updates: Completed tasks might not appear instantly in the calendar view if there's a delay in updating the history table.
 
@@ -441,6 +441,7 @@ Comprehensive History: You have a complete record of task completions for histor
 - List View: Provides a simple list of events and tasks, often with a focus on a specific date range.
 
 # Flask, Django, Vite, Combo
+
 ## Flask:
 - Simplicity: Flask is known for its simplicity and minimalism, making it a good choice for small to medium-sized applications where you want more control over your components and libraries.
 - Flexibility: Flask provides flexibility, allowing you to choose your preferred libraries and components for various parts of your application.
@@ -448,81 +449,69 @@ Comprehensive History: You have a complete record of task completions for histor
 - microservices architecture, want a lightweight backend
 
 ## Vite with Vue.js:
-
 - Modern Frontend: Vite is primarily a build tool for modern JavaScript applications and is often used with frontend frameworks like Vue.js or React. If you want a highly interactive and dynamic frontend with features like real-time updates, Vue.js and Vite can be a great choice.
 - Single-Page Applications (SPAs): If your application will be a single-page application (SPA) with complex frontend logic and frequent updates, Vue.js and Vite provide excellent tools for this purpose.
 - Efficient Development: Vite's fast development server and hot module replacement make it suitable for rapid frontend development.
 - highly interactive and dynamic frontend with features like real-time updates
 
 ## Django:
-
 - Full-Stack Framework: Django is a full-stack framework that includes both backend and frontend components. If you want an all-in-one solution for building your application, Django can be a good choice.
 - Admin Interface: Django's admin interface is a powerful tool for managing data in the backend, which can be helpful if your application involves complex data management.
 - Built-in Features: Django provides built-in features for user authentication, routing, database ORM, and more, which can save development time.
 - all-in-one, full-stack solution with a built-in admin interface and a rich set of features
 
 ## Vite/Django
-
-Efficient Development: Vite's fast development server with hot module replacement (HMR) significantly speeds up frontend development. You can see changes in your code instantly without needing to manually refresh the page, which can greatly enhance your productivity.
-
-Modern Frontend: Vite is designed for modern JavaScript development, making it a great fit for single-page applications (SPAs), real-time features, and interactive user interfaces. You can easily integrate Vue.js, React, or other frontend frameworks.
-
-Separation of Concerns: By using Vite for your frontend and Django for your backend, you can maintain a clear separation of concerns between the client and server. This makes it easier to manage and scale different parts of your application independently.
-
-Scalability: Django is known for its scalability on the backend, while Vite's efficient build process ensures that your frontend code remains performant even as it grows. This combination is suitable for applications that need to scale both on the client and server sides.
-
-Customization: You have the flexibility to customize your frontend stack with Vite, choosing the technologies and libraries that best suit your project's needs. This ensures that you're not locked into a particular frontend framework or toolchain.
-
-API Integration: Django can serve as a backend API for your Vite-based frontend. You can use Django Rest Framework to define API endpoints and interact with your backend data seamlessly.
-
-Ecosystem: Both Vite and Django have active communities and ecosystems, providing access to a wide range of packages, extensions, and resources for building web applications.
-
+-  Development: Vite's fast development server with hot module replacement (HMR) significantly speeds up frontend development. You can see changes in your code instantly without needing to manually refresh the page, which can greatly enhance your productivity.
+- Modern Frontend: Vite is designed for modern JavaScript development, making it a great fit for single-page applications (SPAs), real-time features, and interactive user interfaces. You can easily integrate Vue.js, React, or other frontend frameworks.
+- Separation of Concerns: By using Vite for your frontend and Django for your backend, you can maintain a clear separation of concerns between the client and server. This makes it easier to manage and scale different parts of your application independently.
+- Scalability: Django is known for its scalability on the backend, while Vite's efficient build process ensures that your frontend code remains performant even as it grows. This combination is suitable for applications that need to scale both on the client and server sides.
+- Customization: You have the flexibility to customize your frontend stack with Vite, choosing the technologies and libraries that best suit your project's needs. This ensures that you're not locked into a particular frontend framework or toolchain.
+- API Integration: Django can serve as a backend API for your Vite-based frontend. You can use Django Rest Framework to define API endpoints and interact with your backend data seamlessly.
+- Ecosystem: Both Vite and Django have active communities and ecosystems, providing access to a wide range of packages, extensions, and resources for building web applications.
 
 # Scalability vs User Friendliness
 
 ## Scalability:
 
-Django is known for its scalability. It's suitable for building applications of various sizes, from small to large-scale projects. Django's architecture allows you to modularize your application, making it easier to scale specific components as needed. Additionally, Django's ORM (Object-Relational Mapping) provides tools for efficient database operations, which is crucial for scalability.
-
-Django also benefits from a strong community and ecosystem, which means you can find libraries, plugins, and resources to help with scalability challenges.
+### Django:
+ - Known for its scalability. 
+ - Suitable for building applications of various sizes, from small to large-scale projects. 
+ - Architecture allows you to modularize your application, making it easier to scale specific components as needed. 
+ - ORM (Object-Relational Mapping) provides tools for efficient database operations, which is crucial for scalability.
+- Benefits from a strong community and ecosystem, which means you can find libraries, plugins, and resources to help with scalability challenges.
 
 ## User-Friendliness:
 
-For non-technical users, Django offers several advantages:
-
-Admin Interface: Django's admin interface is one of its standout features. It provides an out-of-the-box, user-friendly dashboard for managing data and tasks. Non-technical users can easily add, edit, and manage tasks and users through this interface without needing to write code.
-
-Built-in Authentication: Django includes a built-in authentication system, making it straightforward to manage user accounts and access controls. This is important for user security and privacy.
-
-Community Packages: Django's ecosystem offers a wide range of community-contributed packages and extensions for building user-friendly features like calendars, user notifications, and more.
-
-Template System: Django's template system allows you to create flexible and user-friendly frontends, ensuring a pleasant user experience.
+### Django offers several advantages:
+- Admin Interface: Django's admin interface is one of its standout features. It provides an out-of-the-box, user-friendly dashboard for managing data and tasks. Non-technical users can easily add, edit, and manage tasks and users through this interface without needing to write code.
+- Built-in Authentication: Django includes a built-in authentication system, making it straightforward to manage user accounts and access controls. This is important for user security and privacy.
+- Community Packages: Django's ecosystem offers a wide range of community-contributed packages and extensions for building user-friendly features like calendars, user notifications, and more.
+- Template System: Django's template system allows you to create flexible and user-friendly frontends, ensuring a pleasant user experience.
 
 # Community Packages
 
 ## Django Crispy Forms:
-
-PyPI: django-crispy-forms
-GitHub: django-crispy-forms
-Description: This package makes it easy to style and render Django forms using custom template packs. It can improve the appearance and usability of your forms.
+- PyPI: django-crispy-forms
+- GitHub: django-crispy-forms
+- Description: This package makes it easy to style and render Django forms using custom template packs. It can improve the appearance and usability of your forms.
 Django Rest Framework (DRF):
 
 ## Django Rest Framework
-PyPI: djangorestframework
-GitHub: django-rest-framework
-Description: If you plan to build a REST API for your application, Django Rest Framework simplifies API development. It offers built-in support for serialization, authentication, and viewsets.
+- PyPI: djangorestframework
+- GitHub: django-rest-framework
+- Description: If you plan to build a REST API for your application, Django Rest Framework simplifies API development. It offers built-in support for serialization, authentication, and viewsets.
 django-allauth:
 
 ## Django AllAuth
-PyPI: django-allauth
-GitHub: django-allauth
-Description: If you want to implement custom user authentication while retaining the flexibility of Django's authentication system, django-allauth is a popular choice. It provides features for user registration, email confirmation, and more.
+- PyPI: django-allauth
+- GitHub: django-allauth
+- Description: If you want to implement custom user authentication while retaining the flexibility of Django's authentication system, django-allauth is a popular choice. It provides features for user registration, email confirmation, and more.
 django-notifications-hq:
 
 ## Django notifications
-PyPI: django-notifications-hq
-GitHub: django-notifications-hq
-Description: This package allows you to send user notifications within your Django application. It can be useful for notifying users about task updates or reminders.
+- PyPI: django-notifications-hq
+- GitHub: django-notifications-hq
+- Description: This package allows you to send user notifications within your Django application. It can be useful for notifying users about task updates or reminders.
 django-bootstrap4:
 
 ### More about Django Notifications:
@@ -561,15 +550,14 @@ notification.save()
 
 
 ## Django Bootstrap
-PyPI: django-bootstrap4
-GitHub: django-bootstrap4
-Description: If you want to use Bootstrap 4 for styling your Django application, this package provides integration and template tags to simplify Bootstrap usage.
+- PyPI: django-bootstrap4
+- GitHub: django-bootstrap4
+ -Description: If you want to use Bootstrap 4 for styling your Django application, this package provides integration and template tags to simplify Bootstrap usage.
 
+## Flask-Notifications: 
+- Flask-Notifications is a Flask extension that provides a framework for sending notifications within Flask applications. It allows you to send notifications to users, manage notification preferences, and customize the notification content.
 
-## Flask-Notifications. 
-Flask-Notifications is a Flask extension that provides a framework for sending notifications within Flask applications. It allows you to send notifications to users, manage notification preferences, and customize the notification content.
-
-### Example Useage
+### Example Usage
 ```python
 from flask import Flask, render_template, request
 from flask_notifications import NotificationManager
@@ -591,40 +579,28 @@ if __name__ == '__main__':
 
 # Deployment Considerations
 
-
 ## Django or Flask (Backend-Only): 
-When deploying a project that uses only Django or Flask for the backend, you typically need just one domain (or subdomain) to host your application. You can serve both the backend API and any static assets (like HTML templates or JavaScript files) from the same domain.
+- When deploying a project that uses only Django or Flask for the backend, you typically need just one domain (or subdomain) to host your application. You can serve both the backend API and any static assets (like HTML templates or JavaScript files) from the same domain.
 
 ## Vite (Frontend-Only): 
-When deploying a project that uses Vite for the frontend only, you also typically need just one domain (or subdomain) to host the frontend. Vite can build and bundle your frontend assets (HTML, JavaScript, CSS) into a single package that can be served from a single domain.
+- When deploying a project that uses Vite for the frontend only, you also typically need just one domain (or subdomain) to host the frontend. Vite can build and bundle your frontend assets (HTML, JavaScript, CSS) into a single package that can be served from a single domain.
 
 ## Vite with Django (or Flask) (Backend and Frontend Separation): 
-If you're using Vite for the frontend and Django (or Flask) for the backend in a fully separated manner, then yes, you would typically need two domains (or a subdomain and root domain):
-
-One domain (or subdomain) for hosting the frontend, served by Vite. This can be something like app.yourdomain.com.
-Another domain (or subdomain) for hosting the backend API, served by Django (or Flask). This can be something like api.yourdomain.com.
-This separation allows you to maintain clear boundaries between the frontend and backend, enabling you to scale, deploy, and maintain them independently. It also aligns well with the principles of microservices and API-driven development.
-
-When setting up such a configuration, you'll need to configure your web server (e.g., Nginx or Apache) or cloud hosting provider (e.g., AWS, Azure, or Heroku) to route requests to the appropriate domains or subdomains based on the path or URL patterns.
-
-Keep in mind that while this separation offers scalability and maintainability benefits, it may introduce additional complexity in terms of deployment and configuration compared to hosting everything on a single domain. The choice depends on your project's requirements and your deployment infrastructure.
-
-
-
+-  you're using Vite for the frontend and Django (or Flask) for the backend in a fully separated manner, then yes, you would typically need two domains (or a subdomain and root domain):
+- One domain (or subdomain) for hosting the frontend, served by Vite. This can be something like app.yourdomain.com.
+- Another domain (or subdomain) for hosting the backend API, served by Django (or Flask). This can be something like api.yourdomain.com.
+- This separation allows you to maintain clear boundaries between the frontend and backend, enabling you to scale, deploy, and maintain them independently. It also aligns well with the principles of microservices and API-driven development.
+- When setting up such a configuration, you'll need to configure your web server (e.g., Nginx or Apache) or cloud hosting provider (e.g., AWS, Azure, or Heroku) to route requests to the appropriate domains or subdomains based on the path or URL patterns.
+- Keep in mind that while this separation offers scalability and maintainability benefits, it may introduce additional complexity in terms of deployment and configuration compared to hosting everything on a single domain. The choice depends on your project's requirements and your deployment infrastructure.
 
 ## single-domain deployment:
 
 ### Configure Nginx or Apache:
-
-If you're using a web server like Nginx or Apache to serve your application, you can configure it to proxy requests based on the URL path.
-
-For example, you can configure your web server to serve all requests that start with /api/ to your Django backend and route other requests to your Vite frontend.
+- If you're using a web server like Nginx or Apache to serve your application, you can configure it to proxy requests based on the URL path.
+- For example, you can configure your web server to serve all requests that start with /api/ to your Django backend and route other requests to your Vite frontend.
 
 ### Nginx Configuration Example:
-
-nginx
-Copy code
-```
+```conf
 server {
     listen 80;
     server_name yourdomain.com;
@@ -640,20 +616,8 @@ server {
 ```
 
 ### Set Up Django for API Routing:
-
-In your Django application, make sure your API routes are configured to handle requests under the specified path, such as /api/.
+-  your Django application, make sure your API routes are configured to handle requests under the specified path, such as /api/.
 
 ### Configure Vite to Use Relative Paths:
+- When building your Vite frontend, configure it to use relative paths for assets and API requests. This ensures that your frontend works correctly when hosted under a subpath, like /.
 
-When building your Vite frontend, configure it to use relative paths for assets and API requests. This ensures that your frontend works correctly when hosted under a subpath, like /.
-
-#### Example Vite configuration (vite.config.js):
-
-javascript
-Copy code
-```javascript 
-export default {
-    base: '/', // Set the base path to '/'
-    // Other Vite configuration options
-};
-```
